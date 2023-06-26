@@ -1830,7 +1830,7 @@ static LrunResult lrun(
     stderr_path = format("/tmp/ljudge_lrun.%s.log", get_random_hash(6));
     log_debug("lrun stderr redirects to %s", stderr_path.c_str());
   }
-  
+
 #endif
   pid_t pid = fork();
   if (pid == -1) {
@@ -2301,9 +2301,9 @@ static const int CHECKER_EXITCODE_PRESENTATION_ERROR = 2;
 // In most unix systems exit code is limited to 8 bits, -1 becomes 255
 static const int LEGACY_CHECKER_EXITCODE_WRONG_ANSWER = 255;
 static const vector<int> VALID_CHECKER_EXITCODE = {
-  CHECKER_EXITCODE_ACCEPTED, 
-  CHECKER_EXITCODE_WRONG_ANSWER, 
-  CHECKER_EXITCODE_PRESENTATION_ERROR, 
+  CHECKER_EXITCODE_ACCEPTED,
+  CHECKER_EXITCODE_WRONG_ANSWER,
+  CHECKER_EXITCODE_PRESENTATION_ERROR,
   LEGACY_CHECKER_EXITCODE_WRONG_ANSWER
 };
 
@@ -2318,7 +2318,7 @@ static void run_custom_checker(j::object& result, const string& etc_dir, const s
 
 
   // extra lrun args
-  
+
   LrunArgs lrun_args;
   lrun_args.append("--bindfs-ro", "$chroot/tmp/input", get_full_path(testcase.input_path));
   lrun_args.append("--bindfs-ro", "$chroot/tmp/output", get_full_path(testcase.output_path));
@@ -2414,7 +2414,7 @@ static j::object run_testcase(const string& etc_dir, const string& cache_dir, co
         error_message = format("interactor was killed by signal %d", interactor_result.term_sig);
       } else if (std::find(VALID_CHECKER_EXITCODE.begin(), VALID_CHECKER_EXITCODE.end(), interactor_result.exit_code) == VALID_CHECKER_EXITCODE.end()) {
         error_message = format("unknown interactor exit code %d", interactor_result.exit_code);
-      } 
+      }
       if (!error_message.empty()) {
         result["result"] = j::value(TestcaseResult::INTERNAL_ERROR);
         result["error"] = j::value(error_message);
