@@ -345,6 +345,27 @@ void string_replacei(string& str, const string& from, const string& to) {
   }
 }
 
+string string_standard_checker_preprocess(const string& in) {
+  string out = in;
+  // Convert CRLF to LF
+  string_replacei(out, "\r\n", "\n");
+  // Trim final newline
+  out = string_chomp(out);
+  // For simplicity, manually add a newline char for the next step
+  out += '\n';
+  // Trim tailing whitespaces
+  size_t pos = 0;
+  while ((pos = out.find('\n', pos)) != string::npos) {
+    size_t i = pos - 1;
+    while (i >= 0 && out[i] == ' ') --i;
+    out.erase(i + 1, pos - i - 1);
+    pos = i + 2;
+  }
+  // Finally, trim the added newline char
+  out.erase(out.end() - 1);
+  return out;
+}
+
 string which(const string& name, int access = R_OK | X_OK) {
   string result;
   char * path_env = getenv("PATH");
@@ -2143,7 +2164,7 @@ static string remove_space(const string& str) {
 static void run_standard_checker(j::object& result, const Testcase& testcase, const string& user_output_path) {
   log_debug("run_standard_checker: %s %s", testcase.output_path.c_str(), user_output_path.c_str());
   bool use_sha1 = !testcase.output_sha1.empty();
-  string usr = string_chomp(fs::read(user_output_path));
+  string usr = string_standard_checker_preprocess(fs::read(user_output_path));
 
   if (use_sha1) {
     if (sha1(usr) == testcase.output_sha1) {
@@ -2154,7 +2175,7 @@ static void run_standard_checker(j::object& result, const Testcase& testcase, co
       result["result"] = j::value(TestcaseResult::WRONG_ANSWER);
     }
   } else {
-    string out = string_chomp(fs::read(testcase.output_path));
+    string out = string_standard_checker_preprocess(fs::read(testcase.output_path));
     if (usr == out) {
       result["result"] = j::value(TestcaseResult::ACCEPTED);
     } else if (remove_space(usr) == remove_space(out)) {
